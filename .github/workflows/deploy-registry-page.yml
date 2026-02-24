@@ -35,6 +35,9 @@ jobs:
 
             - name: Install dependencies
               run: pnpm install --no-frozen-lockfile
+
+            - name: Build
+              run: pnpm run build:registry
               env:
                   PUBLIC_BACKEND_URL: ${{ vars.PUBLIC_BACKEND_URL }}
 
