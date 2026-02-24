@@ -47,4 +47,4 @@ jobs:
                   apiToken: ${{ secrets.CLOUDFLARE_VR_API_TOKEN }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   command: pages deploy apps/registry/dist --project-name=vayload-registry
-				  gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+                  gitHubToken: ${{ secrets.GITHUB_TOKEN }}
