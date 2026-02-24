@@ -1,11 +1,12 @@
 {
-  "name": "@shiki/theme-vayload",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "./index.js",
-  "exports": {
-    ".": "./index.js",
-    "./theme": "./theme.json",
-    "./theme.json": "./theme.json"
-  }
+    "name": "@shiki/theme-vayload",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "./index.js",
+    "types": "./index.d.ts",
+    "exports": {
+        ".": "./index.js",
+        "./theme": "./theme.json",
+        "./theme.json": "./theme.json"
+    }
 }

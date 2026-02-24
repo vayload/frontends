@@ -1,0 +1,199 @@
+@import 'tailwindcss';
+
+@theme {
+    --color-primary: #ff6b00;
+    --color-primary-dark: #e65c00;
+    --color-bg: #0a0a0a;
+    --color-card: #171717;
+    --color-text: #f5f5f5;
+    --color-text-muted: #a3a3a3;
+
+    --font-sans: 'Space Grotesk Variable', sans-serif;
+    --font-mono: 'JetBrains Mono Variable', monospace;
+    --default-font-family: var(--font-sans);
+
+    --color-vayload-bg: #050505;
+    --color-vayload-bg-light: #0a0a0a;
+    --color-vayload-bg-card: #0f0f10;
+    --color-vayload-bg-elevated: #121214;
+}
+
+.h-vh {
+    height: var(--vh, 100vh);
+}
+
+body.page-auth #app-header {
+    display: none;
+}
+body.page-auth #app-footer {
+    display: none;
+}
+
+body.page-plugins {
+    background-attachment: fixed;
+    background-image:
+        radial-gradient(
+            circle at 99% 33%,
+            hsla(235, 0%, 48%, 0.03) 0%,
+            hsla(235, 0%, 48%, 0.03) 37%,
+            transparent 37%,
+            transparent 100%
+        ),
+        radial-gradient(
+            circle at 46% 16%,
+            hsla(235, 0%, 48%, 0.03) 0%,
+            hsla(235, 0%, 48%, 0.03) 43%,
+            transparent 43%,
+            transparent 100%
+        ),
+        radial-gradient(
+            circle at 99% 25%,
+            hsla(235, 0%, 48%, 0.03) 0%,
+            hsla(235, 0%, 48%, 0.03) 22%,
+            transparent 22%,
+            transparent 100%
+        ),
+        radial-gradient(
+            circle at 57% 88%,
+            hsla(235, 0%, 48%, 0.03) 0%,
+            hsla(235, 0%, 48%, 0.03) 86%,
+            transparent 86%,
+            transparent 100%
+        ),
+        radial-gradient(
+            circle at 82% 78%,
+            hsla(235, 0%, 48%, 0.03) 0%,
+            hsla(235, 0%, 48%, 0.03) 22%,
+            transparent 22%,
+            transparent 100%
+        ),
+        linear-gradient(90deg, rgb(0, 0, 0), rgb(0, 0, 0));
+}
+
+body:not(.page-home) {
+    padding-top: var(--header-h, 0);
+}
+
+button:not(:disabled),
+a:not(:disabled),
+[role='button']:not(:disabled) {
+    cursor: pointer;
+}
+
+.doc-content h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f5f5f5;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #27272a;
+}
+
+.doc-content h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f5f5f5;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.doc-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #fb923c;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.doc-content p {
+    margin-bottom: 1rem;
+    color: #d4d4d8;
+}
+
+.doc-content a {
+    color: #f97316;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.doc-content a:hover {
+    color: #fb923c;
+}
+
+.doc-content ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.doc-content ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.doc-content li {
+    color: #d4d4d8;
+}
+
+.doc-content blockquote {
+    border-left: 4px solid rgba(249, 115, 22, 0.5);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: #a3a3a3;
+}
+
+pre#shiki-container {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    @apply bg-vayload-bg-card! rounded-xl;
+}
+
+.doc-content code {
+    font-size: 0.875rem;
+}
+
+.doc-content table {
+    width: 100%;
+    border: 1px solid #27272a;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.doc-content thead {
+    background: #0a0a0a;
+    color: #e5e5e5;
+}
+
+.doc-content tbody tr + tr {
+    border-top: 1px solid #27272a;
+}
+
+.doc-content tr {
+    transition: background-color 0.15s ease;
+}
+
+.doc-content tr:hover {
+    background: rgba(23, 23, 23, 0.5);
+}
+
+.doc-content th {
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a3a3a3;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #27272a;
+}
+
+.doc-content td {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #d4d4d8;
+}
