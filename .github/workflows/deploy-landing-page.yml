@@ -12,6 +12,7 @@ on:
 
 permissions:
     contents: read
+    deployments: write
 
 jobs:
     deploy:
@@ -43,6 +44,8 @@ jobs:
             - name: Deploy to Cloudflare Pages
               uses: cloudflare/wrangler-action@v3
               with:
+                  packageManager: pnpm
                   apiToken: ${{ secrets.CLOUDFLARE_VL_API_TOKEN }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   command: pages deploy apps/landing/dist --project-name=vayload-landing
+				  gitHubToken: ${{ secrets.GITHUB_TOKEN }}
