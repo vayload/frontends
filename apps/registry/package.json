@@ -1,0 +1,36 @@
+{
+	"name": "@vayload/registry",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/markdown-remark": "^6.3.10",
+		"@astrojs/mdx": "^4.3.13",
+		"@astrojs/react": "^4.4.2",
+		"@fontsource-variable/jetbrains-mono": "^5.2.8",
+		"@fontsource-variable/space-grotesk": "^5.2.10",
+		"@shiki/theme-vayload": "workspace:*",
+		"@tailwindcss/vite": "^4.1.18",
+		"astro": "^5.16.15",
+		"axios": "^1.13.4",
+		"lucide-react": "^0.563.0",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4",
+		"react-hook-form": "^7.71.1",
+		"react-markdown": "^10.1.0",
+		"react-shiki": "^0.9.1",
+		"remark-gfm": "^4.0.1",
+		"tailwindcss": "^4.1.18",
+		"zod": "^4.3.6",
+		"zustand": "^5.0.11"
+	},
+	"devDependencies": {
+		"@types/react": "^19.2.10",
+		"@types/react-dom": "^19.2.3"
+	}
+}

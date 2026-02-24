@@ -1,0 +1,126 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { OpenApiReader } from '../components/features/OpenApiReader';
+
+const sampleSpec = {
+	openapi: '3.0.0',
+	info: {
+		title: 'Vayload Registry API',
+		version: '2.0.0',
+		description: 'API for managing plugins, versions, and developer profiles in the Vayload Registry.',
+	},
+	components: {
+		schemas: {
+			Plugin: {
+				type: 'object',
+				required: ['name', 'package_name'],
+				properties: {
+					id: { type: 'string', description: 'Unique identifier' },
+					name: { type: 'string', description: 'Display name' },
+					package_name: { type: 'string', description: 'Unique internal name' },
+					version: { type: 'string' },
+					author: { $ref: '#/components/schemas/User' },
+					tags: {
+						type: 'array',
+						items: { type: 'string' },
+					},
+				},
+			},
+			User: {
+				type: 'object',
+				properties: {
+					username: { type: 'string' },
+					avatar_url: { type: 'string' },
+					role: { type: 'string', enum: ['admin', 'developer', 'user'] },
+				},
+			},
+		},
+	},
+	paths: {
+		'/plugins': {
+			get: {
+				summary: 'List all plugins',
+				description: 'Retrieve a list of all publicly available plugins in the registry.',
+				tags: ['Plugins'],
+				responses: {
+					'200': {
+						description: 'A list of plugins',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'array',
+									items: { $ref: '#/components/schemas/Plugin' },
+								},
+							},
+						},
+					},
+				},
+			},
+			post: {
+				summary: 'Create a new plugin',
+				description: 'Submit a new plugin to the registry. Requires developer authentication.',
+				tags: ['Plugins'],
+				requestBody: {
+					required: true,
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/Plugin' },
+						},
+					},
+				},
+				responses: {
+					'201': {
+						description: 'Plugin successfully created',
+						content: {
+							'application/json': {
+								schema: { $ref: '#/components/schemas/Plugin' },
+							},
+						},
+					},
+					'401': {
+						description: 'Unauthorized - API Token missing or invalid',
+					},
+				},
+			},
+		},
+		'/auth/me': {
+			get: {
+				summary: 'Get current user profile',
+				description: 'Fetch the profile of the authenticated user based on the provided token.',
+				tags: ['Auth'],
+				responses: {
+					'200': {
+						description: 'User profile details',
+						content: {
+							'application/json': {
+								schema: { $ref: '#/components/schemas/User' },
+							},
+						},
+					},
+					'401': {
+						description: 'Not authenticated',
+					},
+				},
+			},
+		},
+	},
+};
+---
+
+<Layout title="API Reference - Vayload Registry">
+	<main class="container mx-auto px-6 py-20 mt-10">
+		<header class="mb-12 border-b border-neutral-900 pb-12">
+			<div class="flex items-center gap-2 text-orange-500 font-mono text-xs mb-3 uppercase tracking-widest">
+				<span class="size-2 bg-orange-500 rounded-full animate-pulse"></span>
+				Live Documentation
+			</div>
+			<h1 class="text-4xl md:text-5xl font-bold text-white mb-6">API Reference</h1>
+			<p class="text-xl text-neutral-400 max-w-3xl leading-relaxed">
+				Everything you need to integrate with the Vayload Registry. Our API is organized around REST, has
+				resource-oriented URLs, and uses standard HTTP response codes.
+			</p>
+		</header>
+
+		<OpenApiReader client:load initialSpec={sampleSpec} />
+	</main>
+</Layout>

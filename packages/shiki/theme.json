@@ -1,0 +1,101 @@
+{
+	"name": "Vayload Dark",
+	"type": "dark",
+	"colors": {
+		"editor.background": "transparent",
+		"editor.foreground": "#e5e5e5"
+	},
+	"tokenColors": [
+		{
+			"scope": ["keyword", "storage.type", "storage.modifier", "meta.keyword"],
+			"settings": {
+				"foreground": "#ff8c42",
+				"fontStyle": "bold"
+			}
+		},
+		{
+			"scope": ["string", "string.template", "string.regexp"],
+			"settings": {
+				"foreground": "#ffc857"
+			}
+		},
+		{
+			"scope": ["constant.numeric", "constant.language", "constant.other"],
+			"settings": {
+				"foreground": "#ffb997"
+			}
+		},
+		{
+			"scope": ["entity.name.function", "entity.name.section"],
+			"settings": {
+				"foreground": "#f8f8f8",
+				"fontStyle": ""
+			}
+		},
+		{
+			"scope": ["entity.name.type", "support.type", "entity.name.class", "entity.other.attribute-name"],
+			"settings": {
+				"foreground": "#ff6b35"
+			}
+		},
+		{
+			"scope": ["variable", "variable.parameter"],
+			"settings": {
+				"foreground": "#d1d5db"
+			}
+		},
+		{
+			"scope": ["variable.other.property", "meta.property-name"],
+			"settings": {
+				"foreground": "#67e8f9"
+			}
+		},
+		{
+			"scope": ["comment", "comment.block", "comment.line", "comment.documentation"],
+			"settings": {
+				"foreground": "#8b7355",
+				"fontStyle": "italic"
+			}
+		},
+		{
+			"scope": ["punctuation", "punctuation.definition"],
+			"settings": {
+				"foreground": "#9ca3af"
+			}
+		},
+		{
+			"scope": ["entity.name.tag", "meta.tag"],
+			"settings": {
+				"foreground": "#a8a29e"
+			}
+		},
+		{
+			"scope": ["strong"],
+			"settings": {
+				"foreground": "#ff8c42",
+				"fontStyle": "bold"
+			}
+		},
+		{
+			"scope": ["emphasis"],
+			"settings": {
+				"foreground": "#ffc857",
+				"fontStyle": "italic"
+			}
+		},
+		{
+			"scope": ["markup.inserted"],
+			"settings": {
+				"foreground": "#6ee7b7",
+				"background": "#34d39926"
+			}
+		},
+		{
+			"scope": ["markup.deleted"],
+			"settings": {
+				"foreground": "#fca5a5",
+				"background": "#f8717126"
+			}
+		}
+	]
+}

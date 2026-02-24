@@ -1,0 +1,39 @@
+name: Deploy registry to Cloudflare Pages
+
+on:
+    push:
+        branches: ['main']
+        paths:
+            - 'apps/registry/**'
+    pull_request:
+        branches: ['main']
+        paths:
+            - 'apps/registry/**'
+
+permissions:
+    contents: read
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        name: Build and Deploy registry
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install dependencies
+              run: |
+                  pnpm install
+
+            - name: Build
+              run: |
+                  pnpm run build:registry
+              env:
+                  PUBLIC_BACKEND_URL: ${{ vars.PUBLIC_BACKEND_URL }}
+
+            - name: Deploy to Cloudflare Pages
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_VR_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: pages deploy apps/registry/dist --project-name=vayload-registry

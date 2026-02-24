@@ -1,0 +1,219 @@
+---
+title: Protocols
+description: Vayload supports multiple protocols for different use cases.
+---
+
+# Protocols
+
+Vayload is built for the age of AI Agents and Microservices, supporting multiple protocols out of the box.
+
+## HTTP REST API
+
+The default protocol for most use cases.
+
+### Base URL
+
+```
+http://localhost:8080/api/
+```
+
+### Authentication
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  http://localhost:8080/api/content
+```
+
+### Example Endpoints
+
+```bash
+# Get all content
+GET /api/content
+
+# Get specific content
+GET /api/content/:id
+
+# Create content
+POST /api/content
+
+# Update content
+PUT /api/content/:id
+
+# Delete content
+DELETE /api/content/:id
+```
+
+### Response Format
+
+```json
+{
+  "data": { ... },
+  "meta": {
+    "page": 1,
+    "pageSize": 20,
+    "total": 100
+  }
+}
+```
+
+## gRPC (Internal Mesh)
+
+High-performance, low-latency communication for backend-to-backend data fetching.
+
+### Enable gRPC
+
+```yaml
+# config.yaml
+protocols:
+    grpc:
+        enabled: true
+        port: 50051
+        tls: false # Enable in production
+```
+
+### Protocol Buffers
+
+```protobuf
+// content.proto
+syntax = "proto3";
+
+package vayload.content;
+
+service ContentService {
+  rpc GetContent(GetContentRequest) returns (Content);
+  rpc ListContents(ListContentsRequest) returns (ContentList);
+  rpc CreateContent(CreateContentRequest) returns (Content);
+}
+
+message GetContentRequest {
+  string id = 1;
+}
+
+message Content {
+  string id = 1;
+  string title = 2;
+  string body = 3;
+  string created_at = 4;
+}
+```
+
+### Plugin Integration
+
+```lua
+-- plugins/my-plugin/grpc.lua
+function plugin.registerGrpc(kernel)
+  kernel.router:grpc("content.ContentService", "GetContent", function(ctx)
+    local id = ctx.request.id
+    local content = kernel.services.entity:findOne("content", { where = { id = id } })
+    return content
+  end)
+end
+```
+
+## MCP (Model Context Protocol)
+
+Native support for the **Model Context Protocol**. Connect AI agents directly to your Vayload instance.
+
+### What is MCP?
+
+MCP allows AI agents to:
+
+- Read context from your CMS
+- Trigger actions safely
+- Interact with content programmatically
+
+### Enable MCP
+
+```yaml
+# config.yaml
+protocols:
+    mcp:
+        enabled: true
+        port: 8081
+        auth: jwt # or 'api_key'
+```
+
+### MCP Methods
+
+```lua
+-- Register MCP methods in plugin
+function plugin.registerMCP(kernel)
+  -- Read context
+  kernel.router:mcp("context.get", function(ctx)
+    local contentId = ctx.params.id
+    return kernel.services.entity:findOne("content", {
+      where = { id = contentId }
+    })
+  end)
+
+  -- Trigger action
+  kernel.router:mcp("action.publish", function(ctx)
+    local contentId = ctx.params.id
+    return kernel.services.entity:update("content", contentId, {
+      status = "published",
+      published_at = os.time()
+    })
+  end)
+
+  -- Search content
+  kernel.router:mcp("search", function(ctx)
+    local query = ctx.params.query
+    return kernel.services.entity:findMany("content", {
+      where = {
+        title = { contains = query }
+      }
+    })
+  end)
+end
+```
+
+### AI Assistant Integration
+
+```javascript
+// Example: Connecting an AI assistant
+const mcpClient = new MCPClient({
+    endpoint: "http://localhost:8081/mcp",
+    token: "your-mcp-token",
+});
+
+// Get content context for AI
+const context = await mcpClient.call("context.get", { id: "123" });
+
+// AI suggests publishing
+const result = await mcpClient.call("action.publish", { id: "123" });
+```
+
+## Protocol Comparison
+
+| Protocol  | Best For                       | Performance | Enabled By Default |
+| --------- | ------------------------------ | ----------- | ------------------ |
+| HTTP REST | General purpose, external APIs | Good        | ✅ Yes             |
+| gRPC      | Internal microservices         | Excellent   | ❌ No              |
+| MCP       | AI agents, automation          | Good        | ❌ No              |
+
+## Security Considerations
+
+### HTTP REST
+
+- Use HTTPS in production
+- Implement rate limiting
+- Validate all inputs
+
+### gRPC
+
+- Enable TLS/mTLS
+- Use service mesh for complex deployments
+- Implement authentication middleware
+
+### MCP
+
+- Strict authentication required
+- Limit AI agent permissions
+- Audit all MCP calls
+- Implement human-in-the-loop for destructive actions
+
+## Next Steps
+
+- Read the [API reference](/docs/api)
+- Learn about [plugins](/docs/plugins)
+- Explore [database](/docs/database) features

@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Vulnerabilities Advisors - Vayload Registry">
+	<main class="container mx-auto px-6 py-24">
+		<div class="max-w-4xl mx-auto">
+			<header class="mb-12">
+				<h1 class="text-4xl md:text-5xl font-bold text-white mb-6">Vulnerabilities Advisors</h1>
+				<p class="text-xl text-neutral-400 leading-relaxed">
+					Our team of security experts and automated systems work together to identify and mitigate potential
+					vulnerabilities in the Vayload ecosystem.
+				</p>
+			</header>
+
+			<section class="grid gap-12">
+				<div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-8 backdrop-blur-sm">
+					<h2 class="text-2xl font-semibold text-white mb-4">Security Advisory Program</h2>
+					<p class="text-neutral-300 mb-6 leading-relaxed">
+						The Vulnerabilities Advisors program is dedicated to maintaining the highest security standards
+						for all plugins and scripts in the registry. We provide guidance to developers and critical
+						alerts to users.
+					</p>
+					<ul class="space-y-4 text-neutral-400">
+						<li class="flex items-start gap-3">
+							<span class="text-orange-500 mt-1">•</span>
+							<span>Continuous automated security scanning of all plugin updates.</span>
+						</li>
+						<li class="flex items-start gap-3">
+							<span class="text-orange-500 mt-1">•</span>
+							<span>Manual code reviews for high-privilege plugins.</span>
+						</li>
+						<li class="flex items-start gap-3">
+							<span class="text-orange-500 mt-1">•</span>
+							<span>Coordinated disclosure of security vulnerabilities.</span>
+						</li>
+					</ul>
+				</div>
+
+				<div class="space-y-6">
+					<h2 class="text-2xl font-semibold text-white">Latest Security Advisories</h2>
+					<div class="p-6 bg-neutral-900/30 border border-neutral-800 rounded-xl">
+						<p class="text-neutral-500 italic">
+							No critical security advisories at this time. All systems are operating normally.
+						</p>
+					</div>
+				</div>
+
+				<div class="border-t border-neutral-800 pt-12">
+					<h2 class="text-2xl font-semibold text-white mb-4">Report a Vulnerability</h2>
+					<p class="text-neutral-400 mb-6">
+						If you believe you have discovered a security vulnerability in a plugin or the Vayload Registry
+						platform, please report it to our security team.
+					</p>
+					<a
+						href="mailto:security@vayload.io"
+						class="inline-flex items-center px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors"
+					>
+						Contact Security Team
+					</a>
+				</div>
+			</section>
+		</div>
+	</main>
+</Layout>

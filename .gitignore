@@ -1,0 +1,126 @@
+############################
+# SYSTEM
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# ENV FILES
+############################
+.env
+.env.*
+!.env.example
+
+############################
+# NODE
+############################
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+.yarn-cache/
+.yarnrc.yml
+
+############################
+# BUILD OUTPUTS
+############################
+dist/
+build/
+.out/
+.next/
+.vercel/
+.output/
+coverage/
+
+# Nested apps/packages
+**/dist/
+**/build/
+**/.next/
+**/.output/
+
+############################
+# ASTRO
+############################
+.astro/
+astro.config.mjs.timestamp-*
+
+############################
+# VITE / REACT
+############################
+.vite/
+vite.config.ts.timestamp-*
+
+############################
+# TURBO / MONOREPO
+############################
+.turbo/
+.nx/
+node_modules/.cache/
+lerna-debug.log*
+
+############################
+# TESTING
+############################
+coverage/
+playwright-report/
+test-results/
+jest-cache/
+.vitest/
+
+############################
+# CACHE
+############################
+.cache/
+.parcel-cache/
+.eslintcache
+
+############################
+# DATABASE / LOCAL FILES
+############################
+*.db
+*.sqlite
+*.sqlite3
+
+############################
+# SSL / KEYS
+############################
+*.pem
+*.key
+**/localhost-key.pem
+**/localhost.pem
+**/ec-private.pem
+**/ec-public.pem
+
+############################
+# IDE
+############################
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+.idea/
+*.swp
+*.swo
+
+############################
+# LOGS
+############################
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+############################
+# DEPLOYMENT
+############################
+.cloudflare/
+wrangler.toml.bak
+
+############################
+# MISC
+############################
+.agent/
+.cursor
+none.md
+_LICENSE.md

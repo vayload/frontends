@@ -1,0 +1,198 @@
+---
+title: Database
+description: Understanding Vayload's Typed EAV database architecture.
+---
+
+# Database Architecture
+
+Vayload uses a **Typed EAV (Entity-Attribute-Value)** architecture for maximum flexibility while maintaining data integrity.
+
+## Supported Databases
+
+Vayload supports multiple SQL engines:
+
+- **SQLite**: For small to medium projects (default)
+- **MySQL**: For production workloads
+- **PostgreSQL**: For advanced features and scalability
+
+## Why Typed EAV?
+
+### The Problem with Other Approaches
+
+| Approach          | Problem                                       |
+| ----------------- | --------------------------------------------- |
+| **JSON Blobs**    | Race conditions (User A overwrites User B)    |
+| **Flat Tables**   | Require schema migrations for every new field |
+| **WordPress EAV** | Uses `LONGTEXT` for all values, wasting space |
+
+### Vayload's Solution
+
+**Typed EAV** allows:
+
+- ✅ Concurrent multi-user editing without conflicts
+- ✅ No race conditions or locks on JSON columns
+- ✅ Explicit types help database index correctly
+- ✅ Infinite fields without migrations
+- ✅ Atomic field-level updates
+
+## Data Structure
+
+### Core Tables
+
+```sql
+-- entities: Main content records
+CREATE TABLE entities (
+  id INTEGER PRIMARY KEY,
+  collection_id INTEGER,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+
+-- attributes: Flexible field storage
+CREATE TABLE attributes (
+  id INTEGER PRIMARY KEY,
+  entity_id INTEGER,
+  attribute_name VARCHAR(255),
+  attribute_type VARCHAR(50), -- 'string', 'int', 'decimal', 'json', 'datetime'
+  value_string TEXT,
+  value_int BIGINT,
+  value_decimal DECIMAL(20,10),
+  value_json JSON,
+  value_datetime TIMESTAMP
+);
+```
+
+### Type-Specific Storage
+
+| Type     | Column Used       | Example               |
+| -------- | ----------------- | --------------------- |
+| String   | `value_string`    | Titles, descriptions  |
+| Integer  | `value_int`       | Stock quantities, IDs |
+| Decimal  | `value_decimal`   | Prices, coordinates   |
+| JSON     | `value_json`      | Complex objects       |
+| DateTime | `value_datetime`  | Timestamps            |
+| Boolean  | `value_int` (0/1) | Flags, status         |
+
+## Migration System
+
+Vayload includes a Lua-based migration system:
+
+```lua
+-- migrations/001_initial.lua
+return {
+  up = function(db)
+    db:create_collection("products", {
+      fields = {
+        { name = "name", type = "string", required = true },
+        { name = "price", type = "decimal", required = true },
+        { name = "stock", type = "integer", default = 0 },
+      }
+    })
+  end,
+
+  down = function(db)
+    db:drop_collection("products")
+  end
+}
+```
+
+### Engine-Specific Code
+
+```lua
+-- migrations/002_optimize.lua
+local db = require("vayload:db")
+
+return {
+  up = function(db)
+    -- SQLite-specific optimization
+    db:forEachEngine("sqlite", function()
+      db:exec("PRAGMA journal_mode=WAL;")
+    end)
+
+    -- PostgreSQL-specific optimization
+    db:forEachEngine("postgres", function()
+      db:exec("CREATE INDEX CONCURRENTLY idx_attrs ON attributes(entity_id, attribute_name);")
+    end)
+
+    -- MySQL-specific optimization
+    db:forEachEngine("mysql", function()
+      db:exec("CREATE INDEX idx_attrs ON attributes(entity_id, attribute_name);")
+    end)
+  end
+}
+```
+
+:::caution
+Use `ifEngine()` with care—it can introduce SQL injection if not handled correctly.
+:::
+
+## Performance Mitigation
+
+EAV reads are inherently slower due to joins. We mitigate this via:
+
+### 1. Materialized Views
+
+Flatten content for express reads:
+
+```sql
+CREATE MATERIALIZED VIEW product_flat AS
+SELECT
+  e.id,
+  MAX(CASE WHEN a.attribute_name = 'name' THEN a.value_string END) as name,
+  MAX(CASE WHEN a.attribute_name = 'price' THEN a.value_decimal END) as price
+FROM entities e
+JOIN attributes a ON e.id = a.entity_id
+WHERE e.collection_id = 'products'
+GROUP BY e.id;
+```
+
+### 2. Event-Driven Cache Updates
+
+Cache warms immediately on save:
+
+```lua
+kernel.events.on("content.saved", function(entity)
+  kernel.cache:invalidate("product:" .. entity.id)
+  kernel.cache:prewarm("product:" .. entity.id)
+end)
+```
+
+### 3. Aggressive Indexing
+
+Typed values enable proper indexing:
+
+```sql
+-- Integer values are indexed as numbers
+CREATE INDEX idx_attr_int ON attributes(value_int)
+WHERE attribute_type = 'integer';
+
+-- String values have full-text search
+CREATE INDEX idx_attr_string ON attributes(value_string);
+```
+
+## Querying Data
+
+### Entity Service
+
+```lua
+-- Get product by ID
+local product = kernel.services.entity:findOne("products", {
+  where = { id = 123 }
+})
+
+-- Query with filters
+local products = kernel.services.entity:findMany("products", {
+  where = {
+    price = { gte = 10, lte = 100 },
+    stock = { gt = 0 }
+  },
+  orderBy = { price = "asc" },
+  limit = 20
+})
+```
+
+## Next Steps
+
+- Learn how to create [plugins](/docs/plugins)
+- Explore supported [protocols](/docs/protocols)
+- Read the [API reference](/docs/api)

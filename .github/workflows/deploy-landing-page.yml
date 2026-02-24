@@ -1,0 +1,37 @@
+name: Deploy Landing to Cloudflare Pages
+
+on:
+    push:
+        branches: ['main']
+        paths:
+            - 'apps/landing/**'
+    pull_request:
+        branches: ['main']
+        paths:
+            - 'apps/landing/**'
+
+permissions:
+    contents: read
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        name: Build and Deploy Landing
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install dependencies
+              run: |
+                  pnpm install
+
+            - name: Build
+              run: |
+                  pnpm run build:landing
+
+            - name: Deploy to Cloudflare Pages
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_VL_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: pages deploy apps/landing/dist --project-name=vayload-landing

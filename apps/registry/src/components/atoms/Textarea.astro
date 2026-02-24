@@ -1,0 +1,40 @@
+---
+interface Props {
+	placeholder?: string;
+	className?: string;
+	id?: string;
+	name?: string;
+	value?: string;
+	required?: boolean;
+	disabled?: boolean;
+	rows?: number;
+	error?: string;
+}
+
+const {
+	placeholder,
+	className = '',
+	id,
+	name,
+	value,
+	required = false,
+	disabled = false,
+	rows = 4,
+	error,
+	...props
+} = Astro.props;
+---
+
+<div class="space-y-1.5 w-full">
+	<textarea
+		id={id}
+		name={name}
+		placeholder={placeholder}
+		required={required}
+		disabled={disabled}
+		rows={rows}
+		class={`w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-white outline-none focus:border-orange-500 transition-all text-sm placeholder:text-neutral-600 disabled:opacity-50 disabled:cursor-not-allowed resize-none ${error ? 'border-red-500 focus:border-red-500' : ''} ${className}`}
+		{...props}>{value}</textarea
+	>
+	{error && <p class="text-xs text-red-500">{error}</p>}
+</div>

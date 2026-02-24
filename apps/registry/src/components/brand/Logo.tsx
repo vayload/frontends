@@ -1,0 +1,50 @@
+interface Props {
+	size?: number;
+	withLabel?: boolean;
+	class?: string;
+}
+
+export const Logo = ({ size = 24, withLabel, class: className }: Props) => {
+	return (
+		<div className={`flex items-center justify-center text-white font-bold gap-2 ${className}`}>
+			{/* <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+				<circle cx="25" cy="25" r="8" fill="#FDBA74"></circle>
+				<circle cx="75" cy="25" r="8" fill="#FDBA74"></circle>
+				<circle cx="35" cy="50" r="10" fill="#FB923C"></circle>
+				<circle cx="65" cy="50" r="10" fill="#FB923C"></circle>
+				<circle cx="50" cy="80" r="12" fill="#EA580C"></circle>
+			</svg> */}
+			<svg width="40" height="32" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M0 24L20 0V14L40 0L20 24V14V10L0 24Z" fill="#FF6347"></path>
+			</svg>
+			{/* <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M15 25 L 50 85 L 65 85 L 30 25 Z" fill="#F97316"></path>
+				<path d="M45 25 L 80 85 L 95 85 L 60 25 Z" fill="#FB923C"></path>
+				<rect
+					x="0"
+					y="52"
+					width="100"
+					height="4"
+					fill="white"
+					fill-opacity="0.8"
+					transform="rotate(-15 50 50)"
+				></rect>
+			</svg> */}
+			{/* <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+				<circle cx="50" cy="80" r="10" fill="#EA580C"></circle>
+				<circle cx="35" cy="55" r="8" fill="#F97316"></circle>
+				<circle cx="65" cy="55" r="8" fill="#F97316"></circle>
+				<circle cx="20" cy="30" r="6" fill="#FB923C"></circle>
+				<circle cx="80" cy="30" r="6" fill="#FB923C"></circle>
+				<circle cx="40" cy="30" r="3" fill="#FDBA74"></circle>
+				<circle cx="60" cy="30" r="3" fill="#FDBA74"></circle>
+				<circle cx="50" cy="45" r="4" fill="#FDBA74"></circle>
+			</svg> */}
+			{withLabel && (
+				<span className="font-bold text-lg text-white tracking-tight">
+					Vayload<span className="text-orange-500 pl-2 inline-flex">Plug</span>
+				</span>
+			)}
+		</div>
+	);
+};

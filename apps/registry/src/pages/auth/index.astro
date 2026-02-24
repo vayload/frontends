@@ -1,0 +1,8 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { AuthPage } from '@/components/auth/AuthPage.tsx';
+---
+
+<Layout title="Sign In">
+	<AuthPage client:load client:only="react" />
+</Layout>

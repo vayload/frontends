@@ -1,0 +1,69 @@
+---
+title: Vayload Documentation
+description: Get started with Vayload - the ultra-high performance headless CMS written in Go.
+---
+
+# Welcome to Vayload
+
+Vayload is a **headless extensible CMS/CRM** built in Go with a microkernel architecture, designed to run efficiently on small servers without sacrificing functionality. It supports use cases like e-commerce, blogs, and news portals.
+
+## Project Status
+
+**🚧 Alpha (February 2025)**: Launching end of February  
+**✅ Stable (March 2025)**: Stable version in an additional month
+
+:::caution
+The project is in active development. Many parts may be broken or lack tests. Currently **limited to developers** who want to test the product and can:
+
+- Report bugs found
+- Send recommendations
+- Contribute technical feedback
+  :::
+
+## Quick Start
+
+Install Vayload with a single command:
+
+```bash
+go install vayload.io/core@alpha
+```
+
+Then follow the [installation guide](/docs/installation) to set up your first Vayload instance.
+
+## Why Vayload?
+
+### The Problem We Solve
+
+For years we worked with WordPress creating plugins. Every time we needed something specific, we had to hack the CMS core. Many times we used it only as headless, which left a lot of dead code, since WordPress was built thinking of having frontend and backend in a single codebase.
+
+Later we tried Sanity CMS and Strapi, which we liked for focusing on being only the data source/admin. However, the JavaScript ecosystem presented a problem: **Strapi was too heavy** for a $4/month VPS. Both WordPress and Strapi devoured RAM and CPU.
+
+### The Real Use Case
+
+A friend asked for an admin for her small store. She didn't want to install WordPress or Strapi on a $4 server because her business was small and couldn't afford expensive hosting. Thus Vayload was born: **a CMS that works for e-commerce, news and blogs**, optimized for small servers.
+
+## Key Features
+
+- **🔥 Ultra-lightweight**: Runs on a $4 VPS without breaking a sweat
+- **⚡ Blazing Fast**: Native concurrency with Goroutines
+- **🔌 Extensible**: Plugin system via Lua (sandboxed & secure)
+- **🤖 AI-Ready**: Native MCP support for AI agents
+- **🗄️ Flexible Database**: SQLite for small projects, MySQL/PostgreSQL for scale
+- **📡 Multiple Protocols**: HTTP REST, gRPC, and MCP support
+
+## Philosophy
+
+### AI as Assistant, Not Author
+
+At Vayload we firmly believe that **humans should write the content**. Artificial intelligence is here to assist, not to replace:
+
+- ✅ Check for typos
+- ✅ Summarize existing content
+- ✅ Provide context
+- ❌ Be the primary author of content
+
+## Next Steps
+
+- Read about the [architecture](/docs/architecture)
+- Learn how to create [plugins](/docs/plugins)
+- Check the [API reference](/docs/api)

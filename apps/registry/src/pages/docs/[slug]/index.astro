@@ -1,0 +1,59 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+	const allDocs = await getCollection('docs', ({ data }) => data.published);
+	return allDocs.map((doc) => ({
+		params: { slug: doc.id },
+		props: { doc },
+	}));
+}
+
+interface Props {
+	doc: CollectionEntry<'docs'>;
+}
+
+const { doc } = Astro.props;
+const { Content, headings } = await render(doc);
+
+const allDocs = await getCollection('docs', ({ data }) => data.published);
+const sortedDocs = allDocs.sort((a, b) => a.data.order - b.data.order);
+const currentIndex = sortedDocs.findIndex((d) => d.id === doc.id);
+const prevDoc = currentIndex > 0 ? sortedDocs[currentIndex - 1] : null;
+const nextDoc = currentIndex < sortedDocs.length - 1 ? sortedDocs[currentIndex + 1] : null;
+---
+
+<DocsLayout title={doc.data.title} description={doc.data.description} currentId={doc.id} headings={headings}>
+	<Content />
+
+	{
+		(prevDoc || nextDoc) && (
+			<nav slot="after-content" class="flex justify-between mt-12 pt-8 border-t border-neutral-800">
+				{prevDoc && (
+					<a href={`/docs/${prevDoc.id}`} class="flex-1 text-left group">
+						<div class="text-sm text-neutral-500 mb-1 flex items-center gap-1 group-hover:text-neutral-400 transition-colors">
+							<ChevronLeft size={14} /> Previous
+						</div>
+						<div class="text-white font-medium group-hover:text-orange-500 transition-colors">
+							{prevDoc.data.title}
+						</div>
+					</a>
+				)}
+
+				{nextDoc && (
+					<a href={`/docs/${nextDoc.id}`} class="flex-1 text-right group">
+						<div class="text-sm text-neutral-500 mb-1 flex items-center justify-end gap-1 group-hover:text-neutral-400 transition-colors">
+							Next <ChevronRight size={14} />
+						</div>
+						<div class="text-white font-medium group-hover:text-orange-500 transition-colors">
+							{nextDoc.data.title}
+						</div>
+					</a>
+				)}
+			</nav>
+		)
+	}
+</DocsLayout>

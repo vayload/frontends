@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import DocsLayout from '@/layouts/DocsLayout.astro';
+
+const allDocs = await getCollection('docs', ({ data }) => data.published);
+const firstDoc = allDocs.sort((a, b) => a.data.order - b.data.order)[0];
+
+if (firstDoc) {
+	return Astro.redirect(`/docs/${firstDoc.id}`);
+}
+---
+
+<DocsLayout title="Documentation - Vayload Registry">
+	<div class="max-w-7xl mx-auto px-6 py-20 text-center">
+		<h1 class="text-4xl font-bold text-white mb-4">Documentation</h1>
+		<p class="text-neutral-400">No documentation found.</p>
+	</div>
+</DocsLayout>

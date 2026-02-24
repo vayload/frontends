@@ -1,0 +1,188 @@
+---
+import Search from '@/components/icons/Search.astro';
+import Logo from '../brand/Logo.astro';
+
+const currentPath = Astro.url.pathname;
+const currentView = currentPath;
+---
+
+<header
+	id="app-header"
+	class="border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-md fixed left-0 right-0 top-0 z-50"
+>
+	<div class="max-w-6xl mx-auto px-6 h-18 flex items-center justify-between">
+		<div class="flex items-center gap-2 cursor-pointer">
+			<Logo withLabel={true} size={32} />
+		</div>
+
+		<nav class="hidden md:flex items-center gap-6 text-sm font-medium text-neutral-400">
+			<a href="/" class={`transition-colors ${currentView === 'browse' ? 'text-white' : 'hover:text-white'}`}>
+				Explore
+			</a>
+			<a href="/docs" class={`transition-colors ${currentView === 'docs' ? 'text-white' : 'hover:text-white'}`}>
+				Documentation
+			</a>
+			<a href="#" class="hover:text-white transition-colors"> Community (coming)</a>
+		</nav>
+
+		<div class="flex items-center gap-4">
+			{
+				currentView !== 'auth' && (
+					<div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-500 focus-within:border-orange-500/50 focus-within:text-neutral-300 transition-colors">
+						<Search size={14} />
+						<input
+							type="text"
+							placeholder="Search plugins..."
+							class="bg-transparent border-none outline-none text-sm w-32 placeholder-neutral-600"
+						/>
+					</div>
+				)
+			}
+
+			<div class="relative" id="profile-wrapper">
+				<a href="/auth" id="auth-button" class="flex items-center gap-2 text-orange-400"></a>
+
+				<div
+					id="profile-menu"
+					class="absolute right-0 mt-3 w-52 rounded-xl border border-neutral-800 bg-neutral-950 shadow-2xl
+		opacity-0 scale-95 pointer-events-none
+		transition-all duration-150 ease-out origin-top-right"
+				>
+					<ul class="py-2 text-sm text-neutral-300">
+						<li>
+							<a
+								href="/dev?tab=profile"
+								class="flex items-center gap-2 px-4 py-2 hover:bg-neutral-800/60 transition-colors"
+							>
+								<svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"
+									></path>
+								</svg>
+								Account
+							</a>
+						</li>
+
+						<li class="my-1 border-t border-neutral-800"></li>
+
+						<li>
+							<button
+								id="logout-btn"
+								class="flex items-center gap-2 px-4 py-2 hover:bg-neutral-800/60 transition-colors w-full text-left text-red-400 cursor-pointer"
+							>
+								<svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"
+									></path>
+								</svg>
+								Logout
+							</button>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+
+<script>
+	import { CookieKey, getCookie, httpClient } from '@/shared/httpClient';
+	import { navigate } from 'astro:transitions/client';
+
+	function deleteCookie(name: string) {
+		document.cookie = `${name}=; path=/; max-age=0`;
+	}
+
+	const updateAppState = () => {
+		const isLogged = window.AppState?.isLoggedIn || getCookie(CookieKey.IS_LOGGED);
+		const authButton = document.getElementById('auth-button') as HTMLAnchorElement;
+		const menu = document.getElementById('profile-menu') as HTMLElement;
+		const logoutBtn = document.getElementById('logout-btn') as HTMLButtonElement;
+
+		if (!authButton) return;
+
+		if (isLogged) {
+			authButton.href = '#';
+			authButton.innerHTML = buttons.logged();
+		} else {
+			authButton.href = '/auth';
+			authButton.innerHTML = buttons.unlogged();
+			return;
+		}
+
+		authButton.addEventListener('click', (e) => {
+			e.preventDefault();
+			menu.classList.toggle('opacity-0');
+			menu.classList.toggle('scale-95');
+			menu.classList.toggle('pointer-events-none');
+		});
+
+		logoutBtn?.addEventListener('click', async () => {
+			try {
+				await httpClient.post('/auth/logout');
+			} catch {}
+
+			deleteCookie(CookieKey.IS_LOGGED);
+			deleteCookie(CookieKey.AVATAR_URL);
+
+			navigate('/');
+		});
+	};
+
+	document.addEventListener('astro:page-load', () => {
+		const wrapper = document.getElementById('profile-wrapper') as HTMLElement;
+		const menu = document.getElementById('profile-menu') as HTMLElement;
+
+		updateAppState();
+
+		document.addEventListener('click', (e) => {
+			if (!wrapper.contains(e.target as any)) {
+				menu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+			}
+		});
+	});
+
+	const buttons = {
+		unlogged: () => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
+							id="SVGRepo_tracerCarrier"
+							stroke-linecap="round"
+							stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier">
+							<path
+								d="M11.5 9.5L14 12M14 12L11.5 14.5M14 12H4"
+								stroke="currentColor"
+								stroke-linecap="round"></path>
+							<path
+								d="M8.5 9V4.7198C8.5 4.08876 9.07732 3.61546 9.69612 3.73922L17.6961 5.33922C18.1635 5.43271 18.5 5.84312 18.5 6.3198V17.6802C18.5 18.1569 18.1635 18.5673 17.6961 18.6608L9.69612 20.2608C9.07733 20.3845 8.5 19.9112 8.5 19.2802V15"
+								stroke="currentColor"
+								stroke-opacity="0.24"
+								stroke-linejoin="round"></path>
+						</g>
+					</svg>
+					Sign In`,
+		logged: () => {
+			const avatar =
+				getCookie(CookieKey.AVATAR_URL) ||
+				window.AppState.avatar ||
+				`https://avatar.iran.liara.run/username?username=${window.AppState.username}`;
+			return `<img src="${avatar}" alt="" class="w-9 h-9 rounded-full" />`;
+		},
+	};
+
+	document.addEventListener('astro:page-load', () => {
+		const header = document.getElementById('app-header') as HTMLElement;
+		if (header) {
+			document.body.style.setProperty('--header-h', `${header.offsetHeight}px`);
+		}
+
+		window.AppEvent.listen('user:auth-checked', (state) => {
+			updateAppState();
+		});
+	});
+</script>

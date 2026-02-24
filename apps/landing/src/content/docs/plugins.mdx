@@ -1,0 +1,241 @@
+---
+title: Plugins
+description: Extend Vayload with Lua plugins using the Vayload Plug system.
+---
+
+# Plugins
+
+Vayload's plugin system allows you to extend functionality using **Lua** in a sandboxed, secure environment.
+
+## Why Lua?
+
+### Performance
+
+**QuickJS is slower than LuaJIT** or Lua bytecode. That's why we chose Lua as the main scripting engine.
+
+| Engine               | Cold Start | Memory  |
+| -------------------- | ---------- | ------- |
+| NodeJS / V8          | ~45ms      | High    |
+| QuickJS              | ~12ms      | Medium  |
+| **Vayload (LuaJIT)** | **< 1ms**  | **Low** |
+
+### Security
+
+- Sandboxed execution environment
+- No direct filesystem access
+- No network access (unless explicitly granted)
+- Limited to kernel-provided APIs
+
+## Plugin Structure
+
+```
+plugins/
+└── my-plugin/
+    ├── plugin.yaml          # Plugin metadata
+    ├── init.lua             # Entry point
+    ├── routes.lua           # HTTP routes
+    ├── hooks.lua            # Event hooks
+    └── lib/
+        └── utils.lua        # Helper functions
+```
+
+## Plugin Metadata
+
+```yaml
+# plugin.yaml
+name: my-plugin
+version: 1.0.0
+description: My awesome Vayload plugin
+author: Your Name
+license: MIT
+requires:
+    vayload: ">=0.1.0"
+```
+
+## Basic Plugin
+
+```lua
+-- init.lua
+local plugin = {
+  name = "my-plugin",
+  version = "1.0.0"
+}
+
+-- Called when plugin is loaded
+function plugin.init(kernel)
+  print("My plugin initialized!")
+
+  -- Register routes
+  plugin.registerRoutes(kernel)
+
+  -- Subscribe to events
+  plugin.registerHooks(kernel)
+end
+
+-- Register HTTP routes
+function plugin.registerRoutes(kernel)
+  kernel.router:get("/api/my-plugin/hello", function(ctx)
+    return {
+      message = "Hello from my plugin!",
+      timestamp = os.time()
+    }
+  end)
+
+  kernel.router:post("/api/my-plugin/data", function(ctx)
+    local body = ctx.request.body
+    -- Process data...
+    return { success = true }
+  end)
+end
+
+-- Subscribe to events
+function plugin.registerHooks(kernel)
+  kernel.events.on("content.created", function(data)
+    print("Content created: " .. data.id)
+    -- Do something when content is created
+  end)
+
+  kernel.events.on("user.login", function(user)
+    -- Track user login
+  end)
+end
+
+return plugin
+```
+
+## Available APIs
+
+### Router
+
+```lua
+-- HTTP routes
+kernel.router:get(path, handler)
+kernel.router:post(path, handler)
+kernel.router:put(path, handler)
+kernel.router:delete(path, handler)
+
+-- gRPC routes (if enabled)
+kernel.router:grpc(service, method, handler)
+
+-- MCP routes (if enabled)
+kernel.router:mcp(method, handler)
+```
+
+### Services
+
+```lua
+-- Entity service
+kernel.services.entity:findOne(collection, query)
+kernel.services.entity:findMany(collection, query)
+kernel.services.entity:create(collection, data)
+kernel.services.entity:update(collection, id, data)
+kernel.services.entity:delete(collection, id)
+
+-- User service
+kernel.services.user:findById(id)
+kernel.services.user:findByEmail(email)
+
+-- File service
+kernel.services.file:upload(file)
+kernel.services.file:getUrl(fileId)
+```
+
+### Events
+
+```lua
+-- Subscribe to events
+kernel.events.on(eventName, callback)
+
+-- Emit events
+kernel.events.emit(eventName, data)
+
+-- Common events:
+-- "content.created", "content.updated", "content.deleted"
+-- "user.registered", "user.login", "user.logout"
+-- "file.uploaded", "file.deleted"
+```
+
+### Cache
+
+```lua
+-- Cache operations
+kernel.cache:get(key)
+kernel.cache:set(key, value, ttl)
+kernel.cache:delete(key)
+kernel.cache:clear()
+```
+
+### HTTP Client
+
+```lua
+-- Make HTTP requests (if granted permission)
+local response = kernel.http:get("https://api.example.com/data")
+local response = kernel.http:post("https://api.example.com/data", {
+  body = json.encode({ key = "value" })
+})
+```
+
+## Advanced: Middleware
+
+```lua
+-- Create middleware
+function plugin.authMiddleware(ctx, next)
+  local token = ctx.request.headers["Authorization"]
+
+  if not token then
+    ctx.response.status = 401
+    return { error = "Unauthorized" }
+  end
+
+  -- Validate token...
+  ctx.user = user
+
+  return next(ctx)
+end
+
+-- Apply middleware to routes
+kernel.router:get("/api/protected", plugin.authMiddleware, function(ctx)
+  return { data = "Secret data" }
+end)
+```
+
+## Installing Plugins
+
+### From Vayload Plug (Official Registry)
+
+```bash
+vayload plugin install seo-meta
+vayload plugin install sitemap-generator
+```
+
+### From GitHub
+
+```bash
+vayload plugin install github.com/username/my-plugin
+```
+
+### Local Development
+
+```bash
+# Link local plugin
+vayload plugin link ./my-plugin
+
+# Watch for changes
+vayload plugin watch my-plugin
+```
+
+## Vayload Plug
+
+**Vayload Plug** is the official plugin ecosystem:
+
+- **Plugin Directory**: Browse available plugins
+- **Developer Docs**: Guides for creating plugins
+- **API Reference**: Complete API documentation
+
+Visit [vayload.io/plug](https://vayload.io/plug) to explore the ecosystem.
+
+## Next Steps
+
+- Learn about supported [protocols](/docs/protocols)
+- Read the [API reference](/docs/api)
+- Browse the [Vayload Plug](https://vayload.io/plug) directory

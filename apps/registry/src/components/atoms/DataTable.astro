@@ -1,0 +1,53 @@
+---
+interface Column {
+	key: string;
+	label: string;
+}
+
+interface Props {
+	columns: Column[];
+	data: any[];
+	className?: string;
+	id?: string;
+}
+
+const { columns, data, className = '', id } = Astro.props;
+---
+
+<div id={id} class={`overflow-x-auto ${className}`}>
+	<table class="min-w-max w-full rounded-lg border-none">
+		<thead class="bg-neutral-950 text-neutral-200">
+			<tr class="border-b border-neutral-800">
+				{
+					columns.map((col) => (
+						<th class="text-left text-xs font-semibold uppercase tracking-wider text-neutral-400 px-4 py-3 border-b border-neutral-800">
+							{col.label}
+						</th>
+					))
+				}
+			</tr>
+		</thead>
+
+		<tbody class="divide-y divide-neutral-800">
+			{
+				data.map((row) => (
+					<tr class="hover:bg-neutral-900/50 transition-colors border-b border-neutral-800">
+						{columns.map((col) => (
+							<td class="px-4 py-2 text-neutral-300 text-sm">{row[col.key]}</td>
+						))}
+					</tr>
+				))
+			}
+
+			{
+				data.length === 0 && (
+					<tr>
+						<td colspan={columns.length} class="px-4 py-6 text-center text-neutral-500 text-sm">
+							No hay datos para mostrar
+						</td>
+					</tr>
+				)
+			}
+		</tbody>
+	</table>
+</div>

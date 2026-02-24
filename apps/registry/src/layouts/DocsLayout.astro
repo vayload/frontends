@@ -1,0 +1,94 @@
+---
+import Layout from './Layout.astro';
+import DocsSidebar from '../components/docs/DocsSidebar.astro';
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	title: string;
+	description?: string;
+	currentId?: string;
+	headings?: MarkdownHeading[];
+}
+
+const { title, description, currentId, headings = [] } = Astro.props;
+---
+
+<Layout title={`${title} - Vayload Registry Documentation`}>
+	<div
+		class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row gap-8 min-h-[calc(100vh-64px)] animate-in fade-in duration-500"
+	>
+		<DocsSidebar currentId={currentId} />
+
+		<div class="flex-1 max-w-4xl">
+			<div class="mb-2 text-sm text-orange-500 font-medium">Documentation v2.0</div>
+			<h1 class="text-4xl font-bold text-white mb-6 leading-tight">{title}</h1>
+
+			{description && <p class="text-lg leading-relaxed mb-8 text-neutral-400 max-w-2xl">{description}</p>}
+
+			<div class="prose prose-invert prose-orange max-w-none text-neutral-300 doc-content">
+				<slot />
+			</div>
+
+			<slot name="after-content" />
+		</div>
+
+		{
+			headings.length > 0 && (
+				<div class="hidden xl:block w-48 shrink-0 sticky top-24 h-fit">
+					<h5 class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">On this page</h5>
+
+					<ul class="space-y-2 text-xs text-neutral-400">
+						{headings
+							.filter((h) => h.depth === 2 || h.depth === 3)
+							.map((heading) => (
+								<li style={{ paddingLeft: `${(heading.depth - 2) * 12}px` }}>
+									<a href={`#${heading.slug}`} class="block hover:text-white transition-colors">
+										{heading.text}
+									</a>
+								</li>
+							))}
+					</ul>
+				</div>
+			)
+		}
+	</div>
+</Layout>
+
+<!-- <style lang="postcss" is:global>
+	.doc-content h2 {
+		@apply text-2xl font-bold text-white mt-12 mb-4 scroll-mt-24;
+	}
+	.doc-content h3 {
+		@apply text-xl font-bold text-white mt-8 mb-3 scroll-mt-24;
+	}
+	.doc-content p {
+		@apply mb-4 leading-relaxed;
+	}
+	.doc-content ul {
+		@apply list-disc pl-5 mb-6 space-y-2 marker:text-orange-500;
+	}
+	.doc-content ol {
+		@apply list-decimal pl-5 mb-6 space-y-2 marker:text-orange-500;
+	}
+	.doc-content code:not(pre code) {
+		@apply bg-neutral-900 text-orange-400 px-1.5 py-0.5 rounded text-[0.9em] font-mono;
+	}
+	.doc-content pre {
+		@apply border border-neutral-800 rounded-xl p-4 mb-8 bg-neutral-950/50! backdrop-blur-sm;
+	}
+	.doc-content blockquote {
+		@apply border-l-4 border-orange-500 bg-orange-500/5 p-4 rounded-r-lg mb-8 italic text-neutral-400;
+	}
+	.doc-content hr {
+		@apply border-neutral-800 my-12;
+	}
+	.doc-content table {
+		@apply w-full text-left border-collapse mb-8;
+	}
+	.doc-content th {
+		@apply border-b border-neutral-800 py-2 text-white font-bold text-sm uppercase tracking-wider;
+	}
+	.doc-content td {
+		@apply border-b border-neutral-800/50 py-3 text-neutral-400 text-sm;
+	}
+</style> -->

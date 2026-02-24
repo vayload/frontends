@@ -1,0 +1,324 @@
+---
+title: Plugin Development Guide
+description: Complete guide to building plugins in Lua for the Vayload Registry
+published: true
+order: 2
+tags: ['plugins', 'lua', 'api', 'grpc', 'mcp']
+---
+
+# Plugin Development Guide
+
+Welcome to the Vayload Plugin Development Guide.  
+This document explains how to build, structure, and publish plugins using **Lua** and the Vayload Plugin API.
+
+This is a conceptual guide intended to help you understand the plugin architecture and available APIs.
+
+---
+
+## Overview
+
+Plugins in Vayload allow you to extend the platform by:
+
+- Adding CMS functionality
+- Reacting to system events
+- Exposing HTTP and gRPC endpoints
+- Integrating with MCP (Model Context Protocol)
+- Communicating with external services
+
+All plugins are sandboxed, versioned, and securely loaded by the registry.
+
+---
+
+## Plugin Structure
+
+A basic plugin follows this structure:
+
+```text
+my-plugin/
+├── plugin.lua
+├── manifest.json
+├── routes.lua
+├── events.lua
+├── grpc.lua
+└── README.md
+```
+
+### Required Files
+
+| File            | Description              |
+| --------------- | ------------------------ |
+| `plugin.lua`    | Main plugin entrypoint   |
+| `manifest.json` | Metadata and permissions |
+| `README.md`     | Plugin documentation     |
+
+---
+
+## Plugin Manifest
+
+The `manifest.json` defines plugin metadata and capabilities.
+
+```json
+{
+	"name": "example-plugin",
+	"version": "1.0.0",
+	"description": "Example Vayload plugin",
+	"author": "Your Name",
+	"lua": ">=5.1",
+	"permissions": ["cms:read", "cms:write", "http", "grpc", "events"]
+}
+```
+
+---
+
+## Plugin Entrypoint
+
+The `plugin.lua` file is the main entrypoint.
+
+```lua
+local plugin = {}
+
+function plugin.init(ctx)
+  ctx.log.info("Plugin initialized")
+end
+
+function plugin.shutdown(ctx)
+  ctx.log.info("Plugin shutting down")
+end
+
+return plugin
+```
+
+The `ctx` object provides access to all platform APIs.
+
+---
+
+## CMS API
+
+Plugins can interact with the CMS using the `cms` API.
+
+### Reading Content
+
+```lua
+local posts = ctx.cms.find({
+  collection = "posts",
+  limit = 10
+})
+```
+
+### Creating Content
+
+```lua
+ctx.cms.create({
+  collection = "posts",
+  data = {
+    title = "Hello World",
+    body = "Created from a plugin"
+  }
+})
+```
+
+### Updating Content
+
+```lua
+ctx.cms.update({
+  collection = "posts",
+  id = "post_id",
+  data = {
+    published = true
+  }
+})
+```
+
+---
+
+## Event System
+
+Plugins can subscribe to platform events.
+
+### Listening to Events
+
+```lua
+ctx.events.on("cms.post.created", function(event)
+  ctx.log.info("Post created: " .. event.data.id)
+end)
+```
+
+### Emitting Events
+
+```lua
+ctx.events.emit("plugin.custom.event", {
+  message = "Hello from plugin"
+})
+```
+
+---
+
+## HTTP Router
+
+Plugins can expose HTTP endpoints.
+
+### Defining Routes
+
+```lua
+ctx.http.get("/health", function(req, res)
+  res.json({
+    status = "ok",
+    plugin = "example-plugin"
+  })
+end)
+```
+
+### POST Example
+
+```lua
+ctx.http.post("/webhook", function(req, res)
+  ctx.log.info(req.body.event)
+  res.status(204)
+end)
+```
+
+---
+
+## gRPC API
+
+Plugins may define gRPC services.
+
+### Service Definition
+
+```lua
+ctx.grpc.service("ExampleService", {
+  SayHello = function(request)
+    return {
+      message = "Hello " .. request.name
+    }
+  end
+})
+```
+
+### Calling External gRPC Services
+
+```lua
+local client = ctx.grpc.client("users.v1.UsersService")
+local user = client.GetUser({ id = "123" })
+```
+
+---
+
+## MCP (Model Context Protocol)
+
+Plugins can integrate with MCP to provide context to AI models.
+
+### Registering MCP Context
+
+```lua
+ctx.mcp.register({
+  name = "cms_posts",
+  description = "Latest CMS posts",
+  handler = function()
+    return ctx.cms.find({
+      collection = "posts",
+      limit = 5
+    })
+  end
+})
+```
+
+### MCP Use Cases
+
+- AI-assisted content generation
+- Semantic search
+- Context-aware chatbots
+- Tool calling from LLMs
+
+---
+
+## Configuration
+
+Plugins may expose configurable options.
+
+```lua
+ctx.config.define({
+  key = "enabled",
+  type = "boolean",
+  default = true
+})
+```
+
+Access configuration values:
+
+```lua
+local enabled = ctx.config.get("enabled")
+```
+
+---
+
+## Logging
+
+Use the built-in logger:
+
+```lua
+ctx.log.debug("Debug message")
+ctx.log.info("Info message")
+ctx.log.warn("Warning")
+ctx.log.error("Error")
+```
+
+---
+
+## Security & Permissions
+
+Plugins are restricted by declared permissions.
+
+- CMS access is scoped per collection
+- Network access is sandboxed
+- gRPC services are namespaced
+- File system access is prohibited
+
+---
+
+## Testing Plugins
+
+You can run plugins in development mode:
+
+```bash
+vayload plugins run my-plugin
+```
+
+Or validate the manifest:
+
+```bash
+vayload plugins validate my-plugin
+```
+
+---
+
+## Publishing a Plugin
+
+1. Bump the plugin version
+2. Ensure `manifest.json` is valid
+3. Submit to the Vayload Registry
+
+```bash
+vayload plugins publish .
+```
+
+---
+
+## Best Practices
+
+- Keep plugins small and focused
+- Avoid long-running tasks
+- Use events instead of polling
+- Validate external input
+- Log meaningful messages
+
+---
+
+## Next Steps
+
+- Explore advanced CMS integrations
+- Build AI-powered plugins using MCP
+- Combine HTTP + gRPC APIs
+- Publish your plugin to the registry
+
+Happy hacking 🚀

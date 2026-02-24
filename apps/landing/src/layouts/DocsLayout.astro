@@ -1,0 +1,134 @@
+---
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/space-grotesk';
+
+import './../styles/global.css';
+import './../styles/docs.css';
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	title: string;
+	description?: string;
+	headings?: MarkdownHeading[];
+}
+
+const { title, description = 'Vayload Documentation', headings = [] } = Astro.props;
+
+const sidebarItems = [
+	{
+		title: 'Getting Started',
+		items: [
+			{ label: 'Introduction', href: '/docs' },
+			{ label: 'Installation', href: '/docs/installation' },
+		],
+	},
+	{
+		title: 'Core Concepts',
+		items: [
+			{ label: 'Architecture', href: '/docs/architecture' },
+			{ label: 'Database', href: '/docs/database' },
+			{ label: 'Protocols', href: '/docs/protocols' },
+		],
+	},
+	{
+		title: 'Development',
+		items: [
+			{ label: 'API Reference', href: '/docs/api' },
+			{ label: 'Plugins', href: '/docs/plugins' },
+		],
+	},
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="robots" content="noindex, nofollow" />
+
+		<title>{title} | Vayload Docs</title>
+		<meta name="description" content={description} />
+
+		<ClientRouter />
+	</head>
+	<body class="min-h-screen bg-vayload-bg text-neutral-200 font-sans">
+		<Header />
+
+		<div class="flex pt-25 mx-auto container">
+			<aside class="hidden lg:block w-72 shrink-0 sticky top-25 h-[calc(100vh-5rem)] overflow-y-auto px-6 py-8">
+				<nav class="space-y-8">
+					{
+						sidebarItems.map((section) => (
+							<div>
+								<h3 class="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-3">
+									{section.title}
+								</h3>
+								<ul class="space-y-1">
+									{section.items.map((item) => (
+										<li>
+											<a
+												href={item.href}
+												class:list={[
+													'block px-3 py-2 rounded-lg text-sm transition-all',
+													currentPath === item.href ||
+													currentPath === item.href + '/' ||
+													(currentPath === '/docs/' && item.href === '/docs')
+														? 'bg-orange-500/10 text-orange-400 font-medium'
+														: 'text-neutral-400 hover:text-white hover:bg-white/5',
+												]}
+											>
+												{item.label}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						))
+					}
+				</nav>
+			</aside>
+
+			<main class="flex-1 min-w-0 px-6 lg:px-12 py-8 max-w-4xl">
+				<article class="docs-content">
+					<slot />
+				</article>
+			</main>
+
+			<aside class="hidden xl:block w-64 shrink-0 sticky top-25 h-[calc(100vh-5rem)] overflow-y-auto px-6 py-8">
+				{
+					headings.length > 0 && (
+						<>
+							<div class="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-4">
+								On this page
+							</div>
+							<nav class="space-y-2 text-sm text-neutral-400">
+								{headings
+									.filter((h) => h.depth === 2 || h.depth === 3)
+									.map((heading) => (
+										<a
+											href={`#${heading.slug}`}
+											class:list={[
+												'block py-1 hover:text-white transition-colors',
+												heading.depth === 3 && 'pl-4 border-l border-white/10 ml-1',
+											]}
+										>
+											{heading.text}
+										</a>
+									))}
+							</nav>
+						</>
+					)
+				}
+			</aside>
+		</div>
+
+		<Footer />
+	</body>
+</html>

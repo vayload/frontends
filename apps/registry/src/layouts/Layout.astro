@@ -1,0 +1,235 @@
+---
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/space-grotesk';
+
+import '../styles/global.css';
+// @ts-ignore
+import { ClientRouter } from 'astro:transitions';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+const page = Astro.url.pathname.split('/')[1] || 'home';
+
+const backendUrl = import.meta.env.PUBLIC_BACKEND_URL;
+const data = JSON.stringify({ api_url: backendUrl });
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Vayload Registry" />
+		<meta name="robots" content="noindex, nofollow" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+		<script is:inline set:html={data} type="application/json" id="__data__" />
+		<script is:inline>
+			function normalizePath(path) {
+				return path.replace(/\/+$/, '') || '/';
+			}
+
+			function isSameUrl(a, b) {
+				return (
+					a.origin === b.origin &&
+					normalizePath(a.pathname) === normalizePath(b.pathname) &&
+					a.search === b.search
+				);
+			}
+
+			document.addEventListener('click', function (e) {
+				var target = e.target;
+				var link = target.closest('a[href]');
+
+				if (!link) return;
+				if (link.target === '_blank') return;
+				if (link.hasAttribute('download')) return;
+				if (link.getAttribute('rel') === 'external') return;
+
+				var to = new URL(link.href, window.location.href);
+				var from = new URL(window.location.href);
+
+				if (isSameUrl(from, to)) {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+
+					if (to.hash) {
+						document.querySelector(to.hash)?.scrollIntoView({
+							behavior: 'smooth',
+						});
+					}
+				} else {
+					document.body.classList.remove('page-loaded');
+
+					if (to.hash) {
+						document.querySelector(to.hash)?.scrollIntoView({
+							behavior: 'smooth',
+						});
+					}
+				}
+			});
+
+			if (typeof window.AppEvent !== 'object') {
+				window.AppEvent = {
+					subscribers: {},
+
+					dispatch(event, payload) {
+						if (!this.subscribers[event]) return;
+						this.subscribers[event].forEach(function (fn) {
+							fn(payload);
+						});
+					},
+
+					listen(event, cb) {
+						if (!this.subscribers[event]) {
+							this.subscribers[event] = [];
+						}
+
+						this.subscribers[event].push(cb);
+
+						return () => {
+							this.subscribers[event] = this.subscribers[event].filter(function (fn) {
+								return fn !== cb;
+							});
+						};
+					},
+				};
+			}
+
+			window.AppState = {
+				isLoggedIn: false,
+				user: null,
+				avatar: '',
+				username: '',
+				email: '',
+			};
+		</script>
+
+		<ClientRouter />
+	</head>
+	<body
+		class:list={[
+			'min-h-screen bg-neutral-950 font-sans selection:bg-orange-500/30 text-neutral-200',
+			`page-${page}`,
+		]}
+	>
+		<Header />
+		<slot />
+		<Footer />
+	</body>
+</html>
+
+<script>
+	import { httpClient } from '@/shared/httpClient';
+	import { navigate } from 'astro:transitions/client';
+
+	const state = {
+		user: null as any,
+		checked: false,
+	};
+
+	const getAuth = async () => {
+		try {
+			const data = await httpClient.get('/auth/me');
+
+			return data.data?.data;
+		} catch (err) {
+			return null;
+		}
+	};
+
+	async function checkAuth() {
+		try {
+			const data = await getAuth();
+
+			state.user = data.data;
+			state.checked = true;
+
+			window.AppState = {
+				isLoggedIn: true,
+				user: state.user,
+				avatar: state.user?.data.avatar_url,
+				username: state.user?.data.username,
+				email: state.user?.data.email,
+			};
+
+			// Redirect if user is already logged in
+			if (location.pathname.startsWith('/auth')) {
+				navigate('/dev');
+			}
+		} catch (err) {
+			state.user = null;
+			state.checked = true;
+			window.AppState = {
+				isLoggedIn: false,
+				user: null,
+				avatar: '',
+				username: '',
+				email: '',
+			};
+
+			// Redirect if user is not logged in
+			if (location.pathname.startsWith('/dev')) {
+				navigate('/auth');
+			}
+		} finally {
+			window.AppEvent.dispatch('user:auth-checked', window.AppState);
+		}
+	}
+
+	const init = async () => {
+		const isProtectedRoutes = ['/dev', '/auth'];
+		if (isProtectedRoutes.some((route) => window.location.pathname.startsWith(route))) {
+			await checkAuth();
+		}
+
+		// Listen to clicks
+		document.addEventListener(
+			'click',
+			async (event) => {
+				const target = event.target;
+				if (!(target instanceof HTMLElement)) return;
+
+				const link = target.closest('a');
+				if (!(link instanceof HTMLAnchorElement)) return;
+
+				if (
+					link.target === '_blank' ||
+					event.metaKey ||
+					event.ctrlKey ||
+					event.shiftKey ||
+					event.altKey ||
+					link.hasAttribute('download')
+				) {
+					return;
+				}
+
+				const href = link.getAttribute('href');
+				if (!href) return;
+
+				const shouldBlock = href.startsWith('/dev') || href.startsWith('/auth');
+
+				if (!shouldBlock) return;
+
+				event.preventDefault();
+				event.stopImmediatePropagation();
+
+				const isAuth = Boolean(await getAuth());
+
+				if (href.startsWith('/dev')) {
+					navigate(isAuth ? href : '/auth');
+				} else if (href.startsWith('/auth')) {
+					navigate(isAuth ? '/dev' : href);
+				}
+			},
+			true,
+		);
+	};
+
+	init();
+</script>

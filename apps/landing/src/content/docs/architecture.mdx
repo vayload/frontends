@@ -1,0 +1,110 @@
+---
+title: Architecture
+description: Understanding Vayload's microkernel architecture.
+---
+
+# Architecture
+
+Vayload uses a **three-tier microkernel architecture** designed for extensibility, performance, and security.
+
+## Overview
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   REQUEST FLOW                       │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  Request → Middleware → Kernel → Router → Handlers  │
+│                                              ↓      │
+│                                        Services     │
+│                                              ↓      │
+│                                         Plugins     │
+│                                                      │
+└─────────────────────────────────────────────────────┘
+```
+
+## Three Levels
+
+### Level 1: Kernel
+
+The kernel manages the fundamental components:
+
+- **Dependency Injection (DI)**: Manages service dependencies
+- **Event Bus**: Handles system-wide events
+- **Job Queue**: Background task processing
+- **Lua VM**: Sandboxed scripting environment
+- **Plugin Orchestrator**: Manages plugin lifecycle
+
+### Level 2: Services
+
+Services register with the kernel and can interoperate:
+
+- User Service
+- Content Service
+- File Service
+- Authentication Service
+
+Services communicate through the Event Bus and can call each other via the DI container.
+
+### Level 3: Plugins (Lua)
+
+Plugins extend the CMS functionality:
+
+- Run in sandboxed Lua environment
+- Can register HTTP/gRPC/MCP routes
+- Access kernel services through controlled API
+- Hot-reloadable without restarting
+
+## Communication Flow
+
+Components communicate **top-down**:
+
+1. **Request** enters through Middleware/Guards
+2. **Kernel** processes and routes
+3. **Router** by transport (HTTP, gRPC, MCP)
+4. **Handlers** execute business logic
+5. **Services** provide data operations
+6. **Plugins** extend if needed
+
+:::caution
+Current limitation: Plugins reach kernel-level only. They cannot intercept requests directly yet.
+:::
+
+## Plugin Capabilities
+
+Plugins can currently:
+
+- Register routes in HTTP, gRPC, and MCP
+- Access kernel services in controlled manner
+- Execute in secure sandbox
+
+:::note
+MCP and gRPC are disabled by default. You must enable them manually in configuration.
+:::
+
+## Example: Creating a Plugin
+
+```lua
+-- plugins/hello/init.lua
+local plugin = {}
+
+function plugin.register(kernel)
+  -- Register an HTTP route
+  kernel.router.get("/hello", function(ctx)
+    return { message = "Hello from Lua!" }
+  end)
+
+  -- Listen to events
+  kernel.events.on("content.created", function(data)
+    print("New content created: " .. data.id)
+  end)
+end
+
+return plugin
+```
+
+## Next Steps
+
+- Learn about the [database](/docs/database) architecture
+- Explore [protocols](/docs/protocols) support
+- Read the [API reference](/docs/api)

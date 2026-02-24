@@ -1,0 +1,57 @@
+---
+
+---
+
+<section class="relative h-screen flex items-center justify-center px-6 max-w-7xl mx-auto overflow-hidden">
+	<div
+		class="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-orange-600/20 rounded-full blur-[120px] -z-10 pointer-events-none mix-blend-screen"
+	>
+	</div>
+
+	<div class="flex flex-col items-center text-center z-10 relative">
+		<div
+			class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-900/80 border border-orange-500/30 text-orange-400 text-xs font-medium mb-8 backdrop-blur-md shadow-lg"
+		>
+			<span class="relative flex h-2 w-2">
+				<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"
+				></span>
+				<span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+			</span>
+			In Active Development (Alpha)
+		</div>
+
+		<h1 class="text-5xl md:text-8xl font-semibold tracking-tighter text-white mb-8 leading-[1.05] drop-shadow-2xl">
+			Content management <br />
+			<span class="vayload-gradient-text">without constraints.</span>
+		</h1>
+
+		<p class="text-lg md:text-xl text-neutral-400 max-w-3xl mb-12 leading-relaxed font-light">
+			An ultra-high performance headless engine. Written in <span class="text-white font-medium">Go</span>.
+			Infinitely extensible via <span class="text-white font-medium">Lua</span>.
+			<br class="hidden md:block" />
+			Designed for concurrent multi-user editing with a human-first AI philosophy.
+		</p>
+	</div>
+</section>
+
+<script>
+	function copyToClipboard(text: any) {
+		const el = document.createElement('textarea');
+		el.value = text;
+		document.body.appendChild(el);
+		el.select();
+		document.execCommand('copy');
+		document.body.removeChild(el);
+
+		const feedback = document.getElementById('copy-feedback');
+		const hint = document.getElementById('copy-hint');
+
+		feedback?.classList.remove('hidden');
+		hint?.classList.add('hidden');
+
+		setTimeout(() => {
+			feedback?.classList.add('hidden');
+			hint?.classList.remove('hidden');
+		}, 2000);
+	}
+</script>

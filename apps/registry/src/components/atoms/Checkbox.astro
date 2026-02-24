@@ -1,0 +1,43 @@
+---
+interface Props {
+	className?: string;
+	id?: string;
+	name?: string;
+	checked?: boolean;
+	required?: boolean;
+	disabled?: boolean;
+	label?: string;
+}
+
+const { className = '', id, name, checked = false, required = false, disabled = false, label, ...props } = Astro.props;
+---
+
+<label
+	class={`flex items-center gap-2 cursor-pointer group ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+>
+	<div class="relative flex items-center justify-center">
+		<input
+			id={id}
+			type="checkbox"
+			name={name}
+			checked={checked}
+			required={required}
+			disabled={disabled}
+			class="peer appearance-none w-5 h-5 bg-neutral-950 border border-neutral-800 rounded checked:bg-orange-600 checked:border-orange-600 transition-all outline-none focus:ring-2 focus:ring-orange-500/20"
+			{...props}
+		/>
+		<svg
+			class="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="4"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+		>
+			<polyline points="20 6 9 17 4 12"></polyline>
+		</svg>
+	</div>
+	{label && <span class="text-sm text-neutral-300 group-hover:text-white transition-colors">{label}</span>}
+</label>

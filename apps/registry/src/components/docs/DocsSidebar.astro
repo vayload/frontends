@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+	currentId?: string;
+}
+
+const { currentId } = Astro.props;
+
+const allDocs = await getCollection('docs', ({ data }) => data.published);
+const sortedDocs = allDocs.sort((a, b) => a.data.order - b.data.order);
+
+const gettingStartedDocs = sortedDocs.filter(
+	(doc) => doc.data.tags?.includes('getting-started') || doc.data.tags?.includes('introduction'),
+);
+const apiDocs = sortedDocs.filter((doc) => doc.data.tags?.includes('api') || doc.data.tags?.includes('reference'));
+---
+
+<aside class="w-full md:w-64 shrink-0 hidden md:block sticky top-24 h-fit">
+	<div class="mb-6">
+		<h4 class="font-bold mb-2 font-mono text-sm uppercase tracking-wider text-neutral-500">Getting Started</h4>
+		<ul class="space-y-1 text-sm border-l border-neutral-800 ml-1">
+			{
+				gettingStartedDocs.map((doc) => (
+					<li>
+						<a
+							href={`/docs/${doc.id}`}
+							class={`block pl-4 py-1 transition-colors ${
+								doc.id === currentId
+									? 'text-orange-500 border-l border-orange-500 -ml-px'
+									: 'text-neutral-400'
+							}`}
+						>
+							{doc.data.title}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+
+	{
+		apiDocs.length > 0 && (
+			<div class="mb-6">
+				<h4 class="font-bold  mb-2 font-mono text-sm uppercase tracking-wider text-neutral-500">
+					API Reference
+				</h4>
+				<ul class="space-y-1 text-sm border-l border-neutral-800 ml-1">
+					{apiDocs.map((doc) => (
+						<li>
+							<a
+								href={`/docs/${doc.id}`}
+								class={`block pl-4 py-1 transition-colors ${
+									doc.id === currentId
+										? 'text-orange-500 border-l border-orange-500 -ml-px'
+										: 'text-neutral-400'
+								}`}
+							>
+								{doc.data.title}
+							</a>
+						</li>
+					))}
+				</ul>
+			</div>
+		)
+	}
+
+	<div class="p-4 bg-neutral-900 border border-neutral-800 rounded-xl">
+		<p class="text-xs text-neutral-400 mb-2">Need extra help?</p>
+		<a href="#" class="text-xs font-bold text-orange-500 hover:underline"> Join Discord &rarr; </a>
+	</div>
+</aside>

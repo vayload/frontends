@@ -1,0 +1,92 @@
+---
+title: Installation
+description: Install and configure Vayload on your system.
+---
+
+# Installation
+
+Get Vayload running on your machine in minutes.
+
+## Prerequisites
+
+- Go 1.21 or higher
+- Database: SQLite (default), MySQL, or PostgreSQL
+- 512MB RAM minimum (1GB recommended)
+
+## Install via Go
+
+The simplest way to install Vayload:
+
+```bash
+go install vayload.io/core@alpha
+```
+
+This will download and install the Vayload binary to your `$GOPATH/bin`.
+
+## Verify Installation
+
+Check that Vayload is installed correctly:
+
+```bash
+vayload --version
+```
+
+## Quick Start
+
+1. **Initialize a new project**:
+
+```bash
+vayload init my-project
+cd my-project
+```
+
+2. **Start the development server**:
+
+```bash
+vayload dev
+```
+
+3. **Access the admin panel**:
+
+Open `http://localhost:8080/admin` in your browser.
+
+Default credentials:
+
+- Email: `admin@vayload.io`
+- Password: `admin` (change this immediately!)
+
+## Production Setup
+
+For production environments, we recommend:
+
+1. **Use a production database** (PostgreSQL or MySQL):
+
+```bash
+export VAAYLOAD_DATABASE_URL="postgres://user:pass@localhost/vayload"
+```
+
+2. **Set a secure JWT secret**:
+
+```bash
+export VAAYLOAD_JWT_SECRET="your-super-secret-key"
+```
+
+3. **Run in production mode**:
+
+```bash
+vayload start --env=production
+```
+
+## Docker (Optional)
+
+We also provide a Docker image:
+
+```bash
+docker run -p 8080:8080 vayload/core:latest
+```
+
+## Next Steps
+
+- Learn about the [architecture](/docs/architecture)
+- Configure your [database](/docs/database)
+- Create your first [plugin](/docs/plugins)

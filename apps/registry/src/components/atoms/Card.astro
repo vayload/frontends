@@ -1,0 +1,24 @@
+---
+interface Props {
+	className?: string;
+	id?: string;
+	title?: string;
+	description?: string;
+}
+
+const { className = '', id, title, description } = Astro.props;
+---
+
+<div id={id} class={`bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden shadow-xl ${className}`}>
+	{
+		(title || description) && (
+			<div class="px-6 py-4 border-b border-neutral-800">
+				{title && <h3 class="text-lg font-bold text-white">{title}</h3>}
+				{description && <p class="text-sm text-neutral-400 mt-1">{description}</p>}
+			</div>
+		)
+	}
+	<div class="p-6">
+		<slot />
+	</div>
+</div>

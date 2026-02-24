@@ -1,0 +1,393 @@
+---
+title: API Reference
+description: Complete API reference for Vayload.
+---
+
+# API Reference
+
+Complete reference for the Vayload API.
+
+## Base URL
+
+```
+http://localhost:8080/api/v1
+```
+
+## Authentication
+
+All API requests require authentication via Bearer token:
+
+```bash
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+### Obtain Token
+
+```bash
+POST /api/v1/auth/login
+
+{
+  "email": "admin@vayload.io",
+  "password": "your-password"
+}
+```
+
+Response:
+
+```json
+{
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+        "id": 1,
+        "email": "admin@vayload.io",
+        "role": "admin"
+    }
+}
+```
+
+## Content API
+
+### List Content
+
+```bash
+GET /api/v1/content?collection=products&page=1&limit=20
+```
+
+Query Parameters:
+
+| Parameter    | Type    | Description                            |
+| ------------ | ------- | -------------------------------------- |
+| `collection` | string  | Content type (required)                |
+| `page`       | integer | Page number (default: 1)               |
+| `limit`      | integer | Items per page (default: 20, max: 100) |
+| `sort`       | string  | Sort field (e.g., "created_at:desc")   |
+| `filter`     | object  | Filter conditions                      |
+
+Response:
+
+```json
+{
+    "data": [
+        {
+            "id": 1,
+            "title": "Product A",
+            "price": 99.99,
+            "created_at": "2024-01-15T10:30:00Z"
+        }
+    ],
+    "meta": {
+        "page": 1,
+        "limit": 20,
+        "total": 100,
+        "totalPages": 5
+    }
+}
+```
+
+### Get Single Content
+
+```bash
+GET /api/v1/content/:id?collection=products
+```
+
+Response:
+
+```json
+{
+    "id": 1,
+    "title": "Product A",
+    "description": "A great product",
+    "price": 99.99,
+    "stock": 42,
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z"
+}
+```
+
+### Create Content
+
+```bash
+POST /api/v1/content?collection=products
+
+{
+  "title": "New Product",
+  "description": "Description here",
+  "price": 149.99,
+  "stock": 100
+}
+```
+
+Response:
+
+```json
+{
+    "id": 2,
+    "title": "New Product",
+    "description": "Description here",
+    "price": 149.99,
+    "stock": 100,
+    "created_at": "2024-01-20T14:22:00Z",
+    "updated_at": "2024-01-20T14:22:00Z"
+}
+```
+
+### Update Content
+
+```bash
+PUT /api/v1/content/:id?collection=products
+
+{
+  "price": 129.99,
+  "stock": 85
+}
+```
+
+Response:
+
+```json
+{
+    "id": 1,
+    "title": "Product A",
+    "price": 129.99,
+    "stock": 85,
+    "updated_at": "2024-01-20T15:00:00Z"
+}
+```
+
+### Delete Content
+
+```bash
+DELETE /api/v1/content/:id?collection=products
+```
+
+Response:
+
+```json
+{
+    "success": true,
+    "message": "Content deleted successfully"
+}
+```
+
+## Collection API
+
+### List Collections
+
+```bash
+GET /api/v1/collections
+```
+
+Response:
+
+```json
+{
+    "data": [
+        {
+            "id": "products",
+            "name": "Products",
+            "fields": [
+                { "name": "title", "type": "string", "required": true },
+                { "name": "price", "type": "decimal", "required": true },
+                { "name": "stock", "type": "integer", "default": 0 }
+            ]
+        }
+    ]
+}
+```
+
+### Create Collection
+
+```bash
+POST /api/v1/collections
+
+{
+  "id": "articles",
+  "name": "Articles",
+  "fields": [
+    { "name": "title", "type": "string", "required": true },
+    { "name": "content", "type": "text", "required": true },
+    { "name": "published", "type": "boolean", "default": false }
+  ]
+}
+```
+
+## File API
+
+### Upload File
+
+```bash
+POST /api/v1/files
+Content-Type: multipart/form-data
+
+file: <binary data>
+```
+
+Response:
+
+```json
+{
+    "id": "file-123",
+    "url": "http://localhost:8080/uploads/file-123.jpg",
+    "name": "image.jpg",
+    "size": 1024000,
+    "mimeType": "image/jpeg"
+}
+```
+
+### List Files
+
+```bash
+GET /api/v1/files
+```
+
+### Delete File
+
+```bash
+DELETE /api/v1/files/:id
+```
+
+## User API
+
+### List Users
+
+```bash
+GET /api/v1/users
+```
+
+### Get Current User
+
+```bash
+GET /api/v1/users/me
+```
+
+### Create User
+
+```bash
+POST /api/v1/users
+
+{
+  "email": "user@example.com",
+  "password": "secure-password",
+  "role": "editor"
+}
+```
+
+### Update User
+
+```bash
+PUT /api/v1/users/:id
+
+{
+  "role": "admin"
+}
+```
+
+### Delete User
+
+```bash
+DELETE /api/v1/users/:id
+```
+
+## Error Responses
+
+All errors follow this format:
+
+```json
+{
+    "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "Validation failed",
+        "details": [{ "field": "title", "message": "Title is required" }]
+    }
+}
+```
+
+### Error Codes
+
+| Code               | HTTP Status | Description              |
+| ------------------ | ----------- | ------------------------ |
+| `UNAUTHORIZED`     | 401         | Authentication required  |
+| `FORBIDDEN`        | 403         | Insufficient permissions |
+| `NOT_FOUND`        | 404         | Resource not found       |
+| `VALIDATION_ERROR` | 422         | Invalid input data       |
+| `INTERNAL_ERROR`   | 500         | Server error             |
+
+## Rate Limiting
+
+API requests are limited to:
+
+- 100 requests per minute for authenticated users
+- 20 requests per minute for unauthenticated users
+
+Rate limit headers:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1640995200
+```
+
+## Filtering
+
+### Comparison Operators
+
+```bash
+GET /api/v1/content?collection=products&filter[price][gte]=10&filter[price][lte]=100
+```
+
+| Operator   | Description           |
+| ---------- | --------------------- |
+| `eq`       | Equal                 |
+| `neq`      | Not equal             |
+| `gt`       | Greater than          |
+| `gte`      | Greater than or equal |
+| `lt`       | Less than             |
+| `lte`      | Less than or equal    |
+| `contains` | Contains substring    |
+| `in`       | In array              |
+| `between`  | Between two values    |
+
+### Logical Operators
+
+```bash
+GET /api/v1/content?collection=products&filter[$and][0][price][gte]=10&filter[$and][1][stock][gt]=0
+```
+
+## Pagination
+
+### Cursor-Based (Recommended)
+
+```bash
+GET /api/v1/content?collection=products&cursor=eyJpZCI6MTAw}&limit=20
+```
+
+### Offset-Based
+
+```bash
+GET /api/v1/content?collection=products&page=2&limit=20
+```
+
+## Webhooks
+
+Configure webhooks to receive real-time updates:
+
+```bash
+POST /api/v1/webhooks
+
+{
+  "url": "https://your-app.com/webhook",
+  "events": ["content.created", "content.updated"],
+  "secret": "webhook-secret-key"
+}
+```
+
+## SDKs
+
+Official SDKs coming soon:
+
+- JavaScript/TypeScript
+- Python
+- Go
+- PHP
+
+For now, use any HTTP client with the REST API.

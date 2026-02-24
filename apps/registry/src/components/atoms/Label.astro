@@ -1,0 +1,13 @@
+---
+interface Props {
+	for?: string;
+	className?: string;
+	id?: string;
+}
+
+const { for: htmlFor, className = '', id } = Astro.props;
+---
+
+<label for={htmlFor} id={id} class={`text-xs font-semibold text-neutral-400 uppercase tracking-wider ${className}`}>
+	<slot />
+</label>

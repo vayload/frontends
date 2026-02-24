@@ -1,0 +1,55 @@
+---
+title: API Reference
+description: Complete API documentation for Vayload Registry
+published: true
+order: 2
+tags: ['api', 'reference']
+---
+
+# API Reference
+
+This section contains detailed documentation for all available API endpoints.
+
+## Authentication
+
+Most API endpoints require authentication. You can authenticate using:
+
+### API Key Authentication
+
+Include your API key in the request header:
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Endpoints
+
+### GET /ping
+Health check endpoint.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+### GET /plugins
+List all available plugins.
+
+**Query Parameters:**
+- `page`: Page number (default: 1)
+- `limit`: Items per page (default: 20)
+
+### POST /plugins
+Publish a new plugin.
+
+**Body:**
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "A sample plugin"
+}
+```
