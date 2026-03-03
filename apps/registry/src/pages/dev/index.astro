@@ -1,8 +1,11 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { DeveloperDashboard } from '../../components/features/DeveloperDashboard';
+import { AppLayout } from '../../layouts/ReactContext.tsx';
 ---
 
 <Layout title="Developer Dashboard - Vayload Registry">
-	<DeveloperDashboard client:load />
+    <AppLayout client:load client:only="react">
+        <DeveloperDashboard client:load client:only="react" />
+    </AppLayout>
 </Layout>
