@@ -1,0 +1,11 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { EmailVerifyPage } from '@/components/auth/EmailVerifyPage.tsx';
+import { AppLayout } from '@/layouts/ReactContext';
+---
+
+<Layout title="Verify Email - Vayload Registry">
+    <AppLayout client:load client:only="react">
+        <EmailVerifyPage client:load client:only="react" />
+    </AppLayout>
+</Layout>
