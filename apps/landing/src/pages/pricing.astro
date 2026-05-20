@@ -1,0 +1,154 @@
+---
+import LandingLayout from '@/layouts/LandingLayout.astro';
+const plans = [
+    {
+        name: 'Starter',
+        price: '$19',
+        period: '/month',
+        description: 'For serious side projects & MVPs',
+        features: ['1 project', '50k reads', '5 users', '5GB storage'],
+        cta: 'Start with Demo',
+        highlight: false,
+    },
+    {
+        name: 'Growth',
+        price: '$49',
+        period: '/month',
+        description: 'For startups shipping fast',
+        features: ['5 projects', '500k reads', '20 users', '50GB storage', 'Custom domain', 'Daily backups'],
+        cta: 'Start scaling',
+        highlight: true,
+    },
+    {
+        name: 'Scale',
+        price: '$129',
+        period: '/month',
+        description: 'High-performance workloads',
+        features: ['15 projects', '2M reads', 'Unlimited users', '200GB storage', 'Priority queues', '99.9% SLA'],
+        cta: 'Upgrade to Scale',
+        highlight: false,
+    },
+    {
+        name: 'Enterprise',
+        price: 'Custom',
+        period: '',
+        description: 'For large organizations',
+        features: ['Dedicated infrastructure', 'Unlimited reads', 'Unlimited users', 'Custom SLA', 'Direct support'],
+        cta: 'Talk to Sales',
+        popular: false,
+        accent: 'neutral',
+    },
+];
+---
+
+<LandingLayout title="Vayload Pricing" description="Fast CMS pricing for serious teams">
+    <main class="pt-32 pb-20">
+        <section class="max-w-5xl mx-auto px-6 text-center mb-24">
+            <h1 class="text-5xl md:text-6xl font-semibold text-white mb-6">A CMS that doesn’t slow you down</h1>
+
+            <p class="text-lg text-neutral-400 mb-8 max-w-2xl mx-auto">
+                Built with Go for extreme performance. No bloat. No plugins hell. Just a CMS that works — fast.
+            </p>
+
+            <div class="max-w-md mx-auto bg-neutral-900/80 border border-orange-500 rounded-2xl p-8 mb-8">
+                <p class="text-orange-400 text-sm font-medium mb-2">Live Demo</p>
+
+                <h3 class="text-2xl font-semibold text-white mb-2">Full access. Zero risk.</h3>
+
+                <p class="text-neutral-400 text-sm mb-6">Try all features for 12 hours. No credit card required.</p>
+
+                <a class="block w-full bg-orange-500 text-black py-3 rounded-lg font-medium hover:bg-orange-400">
+                    Launch demo instance
+                </a>
+            </div>
+
+            <p class="text-sm text-neutral-500">Your instance is ready in under 30 seconds</p>
+        </section>
+
+        <section class="max-w-6xl mx-auto px-6 mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-semibold text-white mb-4">Simple pricing for serious projects</h2>
+                <p class="text-neutral-400">No free tier. No hidden limits. Pay only when you're ready.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                {
+                    plans.map((plan) => (
+                        <div
+                            class={`rounded-2xl p-6 border flex flex-col ${
+                                plan.highlight
+                                    ? 'border-orange-500 bg-neutral-900/80'
+                                    : 'border-white/10 bg-neutral-900/50'
+                            }`}
+                        >
+                            {plan.highlight && <div class="mb-4 text-xs text-orange-400 font-medium">Most popular</div>}
+
+                            <h3 class="text-xl font-semibold text-white mb-2">{plan.name}</h3>
+
+                            <p class="text-neutral-500 text-sm mb-4">{plan.description}</p>
+
+                            <div class="mb-6">
+                                <span class="text-3xl font-semibold text-white">{plan.price}</span>
+                                <span class="text-neutral-400 text-sm">{plan.period}</span>
+                            </div>
+
+                            <ul class="space-y-3 mb-8 flex-1">
+                                {plan.features.map((f) => (
+                                    <li class="text-sm text-neutral-300 flex gap-2">✓ {f}</li>
+                                ))}
+                            </ul>
+
+                            <a
+                                class={`w-full py-3 rounded-lg text-center font-medium ${
+                                    plan.highlight
+                                        ? 'bg-orange-500 text-black hover:bg-orange-400'
+                                        : 'bg-white/10 text-white hover:bg-white/20'
+                                }`}
+                            >
+                                {plan.cta}
+                            </a>
+                        </div>
+                    ))
+                }
+            </div>
+        </section>
+
+        <section class="max-w-5xl mx-auto px-6 mb-24">
+            <div class="space-y-16">
+                <div>
+                    <h3 class="text-xl text-white font-semibold mb-3">Performance first</h3>
+                    <p class="text-neutral-400 max-w-2xl">
+                        Built in Go to handle high traffic with minimal resources. No Node overhead. No unnecessary
+                        layers.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl text-white font-semibold mb-3">Built for teams</h3>
+                    <p class="text-neutral-400 max-w-2xl">
+                        Role-based access, multiple projects, and scalable architecture from day one.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl text-white font-semibold mb-3">Production ready</h3>
+                    <p class="text-neutral-400 max-w-2xl">
+                        Daily backups, custom domains, and SLAs available as you scale.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-semibold text-white mb-6">Try it yourself</h2>
+
+            <p class="text-neutral-400 mb-8">Spin up a full instance in seconds and see how fast it really is.</p>
+
+            <a class="bg-orange-500 text-black px-8 py-4 rounded-lg font-medium hover:bg-orange-400">
+                Start 12h demo
+            </a>
+
+            <p class="text-sm text-neutral-500 mt-4">No signup friction. No commitment.</p>
+        </section>
+    </main>
+</LandingLayout>

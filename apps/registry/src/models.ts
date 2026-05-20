@@ -6,7 +6,6 @@ export interface PaginatedResult<T> {
     totalPages: number;
 }
 
-// PLUGINS (PUBLIC)
 export enum FilterStrategy {
     SCORE = 'score',
     LATEST = 'latest',
@@ -61,13 +60,6 @@ export interface PublicPluginDetail {
         avatarUrl?: string;
     };
     latestStableVersion: string;
-
-    // versions: {
-    // 	version: string;
-    // 	status: 'stable' | 'beta';
-    // 	publishedAt: string;
-    // 	downloadsCount: number;
-    // }[];
     versions_count: number;
 
     averageRating?: number;

@@ -10,14 +10,14 @@
         "astro": "astro"
     },
     "dependencies": {
-        "@astrojs/mdx": "^4.3.13",
-        "@fontsource-variable/jetbrains-mono": "^5.2.8",
-        "@fontsource-variable/space-grotesk": "^5.2.10",
+        "@astrojs/mdx": "4.3.13",
+        "@fontsource-variable/jetbrains-mono": "5.2.8",
+        "@fontsource-variable/space-grotesk": "5.2.10",
         "@shiki/theme-vayload": "workspace:*",
-        "@tailwindcss/vite": "^4.1.18",
-        "astro": "^5.6.1",
-        "remark-gfm": "^4.0.1",
-        "sharp": "^0.34.2",
-        "tailwindcss": "^4.1.18"
+        "@tailwindcss/vite": "4.1.18",
+        "astro": "5.6.1",
+        "remark-gfm": "4.0.1",
+        "sharp": "0.34.2",
+        "tailwindcss": "4.1.18"
     }
 }

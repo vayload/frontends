@@ -22,6 +22,9 @@ export default defineConfig({
             },
         },
     },
+    server: {
+        port: 8050,
+    },
     devToolbar: {
         enabled: false,
     },
